@@ -2,7 +2,7 @@ import os
 import math
 import re
 
-from .connection import Connection
+from .connection import Connection, RequestError
 from .vec3 import Vec3
 from .event import BlockEvent, ChatEvent, ProjectileEvent
 from .util import flatten
@@ -276,8 +276,11 @@ class Minecraft:
     
     def getPlayerEntityIds(self):
         """Get the entity ids of the connected players => [id:int]"""
-        ids = self.conn.sendReceive(b"world.getPlayerIds")
-        return ids.split("|")
+        try:
+            ids = self.conn.sendReceive(b"world.getPlayerIds")
+            return ids.split("|")
+        except RequestError:
+            return []
 
     def getPlayerEntityId(self, name):
         """Get the entity id of the named player => [id:int]"""
